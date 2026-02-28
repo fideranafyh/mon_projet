@@ -3,36 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Privé Sécurisé - Live</title>
+    <title>WhatsApp L3 - Login & Chat</title>
     <style>
-        /* Styles pour une interface moderne et responsive */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
-        #chat-box { width: 100%; max-width: 450px; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 90vh; }
-        #messages { flex: 1; overflow-y: auto; padding: 20px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; flex-direction: column; }
-        #typing { font-size: 0.8em; color: #888; padding: 5px 20px; height: 20px; font-style: italic; }
-        #input-area { display: flex; padding: 15px; gap: 10px; background: white; }
-        input { flex: 1; padding: 12px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; font-size: 16px; }
-        button { background: #0084ff; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #0073e6; }
+        /* STYLE GÉNÉRAL */
+        body { 
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            background-color: #e5ddd5; 
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* PAGE DE LOGIN */
+        #login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        #login-container h2 { color: #075e54; margin-bottom: 20px; }
         
-        /* Bulles de messages personnalisées */
-        .msg { margin-bottom: 12px; padding: 10px 15px; border-radius: 18px; max-width: 80%; font-size: 0.95em; line-height: 1.4; word-wrap: break-word; }
-        .sent { background: #0084ff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .received { background: #e4e6eb; color: black; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .sender-name { font-size: 0.75em; display: block; margin-bottom: 3px; font-weight: bold; opacity: 0.8; }
+        #login-container input {
+            width: 90%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #login-container button {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        /* INTERFACE CHAT (miafina amin'ny voalohany) */
+        #chat-container { 
+            display: none; /* Cache le chat au début */
+            width: 100%; 
+            max-width: 500px; 
+            height: 90vh;
+            background: #efe7de; 
+            flex-direction: column; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-header {
+            padding: 10px 16px;
+            background: #075e54; 
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #messages { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        /* Bulles de messages */
+        .msg { 
+            margin-bottom: 8px; 
+            padding: 8px 12px; 
+            border-radius: 8px; 
+            max-width: 80%; 
+            font-size: 14.5px; 
+            position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            word-wrap: break-word;
+        }
+
+        .sent { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; }
+        .received { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; }
+
+        .sender-name { font-size: 11px; font-weight: bold; color: #128c7e; display: block; margin-bottom: 2px; }
+        .sent .sender-name { display: none; }
+
+        #input-area { padding: 10px; background: #f0f0f0; display: flex; gap: 10px; }
+        #input-area input { flex: 1; padding: 12px; border: none; border-radius: 25px; outline: none; }
+        #send-btn { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="chat-box">
-    <div style="padding:15px; background:#0084ff; color:white; text-align:center; font-weight:bold; font-size: 1.1em;">
-        🔒 Discussion Sécurisée (Aiven + Render)
+<div id="login-container">
+    <h2>WhatsApp Login</h2>
+    <input type="text" id="pseudo-input" placeholder="Entrez votre pseudo..." autocomplete="off">
+    <button id="login-btn">Rejoindre le chat</button>
+</div>
+
+<div id="chat-container">
+    <div class="chat-header">
+        <div>
+            <h4 id="display-room">Salon</h4>
+            <span id="display-pseudo" style="font-size: 12px; opacity: 0.8;"></span>
+        </div>
+        <button id="logout-btn" style="background:none; border:none; color:white; cursor:pointer; font-size:12px; text-decoration:underline;">Changer de pseudo</button>
     </div>
+    
     <div id="messages"></div>
-    <div id="typing"></div>
+    <div id="typing" style="font-size: 12px; color: grey; padding: 5px 20px;"></div>
+    
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Écrivez votre message..." autocomplete="off">
-        <button id="send-btn">Envoyer</button>
+        <input type="text" id="msg-input" placeholder="Message" autocomplete="off">
+        <button id="send-btn">➤</button>
     </div>
 </div>
 
@@ -40,96 +129,105 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script>
-    // --- 1. CONNEXION AU SERVEUR LIVE ---
-    // On se connecte à l'URL fournie par Render
     const socket = io("https://mon-projet-2yac.onrender.com");
-
-    // --- 2. CONFIGURATION DU SALON ET SÉCURITÉ ---
-    const params = new URLSearchParams(window.location.search);
-    const room = params.get('room') || 'salon_general'; // Salon par défaut
-    const CLE_SECRET = "MA_CLE_L3_2026"; // Clé de chiffrement (doit être la même pour les deux interlocuteurs)
-
-    // On informe le serveur qu'on rejoint ce salon
-    socket.emit('join-room', room);
-
-    const input = document.getElementById('msg-input');
+    const CLE_SECRET = "MA_CLE_L3_2026"; 
+    
+    // Éléments HTML
+    const loginDiv = document.getElementById('login-container');
+    const chatDiv = document.getElementById('chat-container');
+    const pseudoInput = document.getElementById('pseudo-input');
+    const loginBtn = document.getElementById('login-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+    const msgInput = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const msgDiv = document.getElementById('messages');
-    const typingStatus = document.getElementById('typing');
 
-    // Fonction pour afficher un message graphiquement
-    function afficher(sender, texte, estMoi) {
-        const div = document.createElement('div');
-        div.className = estMoi ? 'msg sent' : 'msg received';
-        div.innerHTML = `<span class="sender-name">${sender}</span>${texte}`;
-        msgDiv.appendChild(div);
-        msgDiv.scrollTop = msgDiv.scrollHeight; // Scroll automatique vers le bas
+    let monPseudo = localStorage.getItem('chat_pseudo');
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get('room') || 'salon_general';
+
+    // --- LOGIQUE D'AFFICHAGE ---
+    function demarrerChat() {
+        loginDiv.style.display = 'none';
+        chatDiv.style.display = 'flex';
+        document.getElementById('display-room').innerText = "Salon: " + room;
+        document.getElementById('display-pseudo').innerText = "Moi: " + monPseudo;
+        socket.emit('join-room', room);
     }
 
-    // --- 3. ENVOI DE MESSAGE ---
-    sendBtn.onclick = () => {
-        const messageBrut = input.value.trim();
-        if(messageBrut) {
-            // Chiffrement AES : le message est transformé en code illisible avant de quitter le navigateur
-            const encrypted = CryptoJS.AES.encrypt(messageBrut, CLE_SECRET).toString();
-            
-            // Envoi des données au serveur (Room, Message chiffré, Nom de l'expéditeur)
-            socket.emit('chat-message', { 
-                room: room, 
-                msg: encrypted, 
-                sender: "Utilisateur_" + socket.id.substring(0, 4) // Nom temporaire basé sur l'ID
-            });
-            
-            // Affichage local du message en clair
-            afficher("Moi", messageBrut, true);
-            input.value = "";
+    // Vérifie si le pseudo existe déjà
+    if (monPseudo) {
+        demarrerChat();
+    }
+
+    // Bouton Login
+    loginBtn.onclick = () => {
+        const val = pseudoInput.value.trim();
+        if (val) {
+            monPseudo = val;
+            localStorage.setItem('chat_pseudo', monPseudo);
+            demarrerChat();
         }
     };
 
-    // --- 4. RÉCEPTION DE MESSAGE ---
+    // Bouton Logout
+    logoutBtn.onclick = () => {
+        localStorage.removeItem('chat_pseudo');
+        location.reload();
+    };
+
+    // --- FONCTIONS CHAT ---
+    function afficher(sender, texte, estMoi) {
+        const div = document.createElement('div');
+        div.className = estMoi ? 'msg sent' : 'msg received';
+        const nameSpan = estMoi ? '' : `<span class="sender-name">${sender}</span>`;
+        div.innerHTML = `${nameSpan}${texte}`;
+        msgDiv.appendChild(div);
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+    }
+
+    sendBtn.onclick = () => {
+        const text = msgInput.value.trim();
+        if(text) {
+            const encrypted = CryptoJS.AES.encrypt(text, CLE_SECRET).toString();
+            socket.emit('chat-message', { room: room, msg: encrypted, sender: monPseudo });
+            afficher("Moi", text, true);
+            msgInput.value = "";
+        }
+    };
+
     socket.on('receive-message', (data) => {
-        try {
-            // Déchiffrement du message reçu avec la clé secrète
-            const bytes = CryptoJS.AES.decrypt(data.msg, CLE_SECRET);
-            const texteClair = bytes.toString(CryptoJS.enc.Utf8);
-            
-            if(texteClair) {
+        if(data.sender !== monPseudo) {
+            try {
+                const bytes = CryptoJS.AES.decrypt(data.msg, CLE_SECRET);
+                const texteClair = bytes.toString(CryptoJS.enc.Utf8);
                 afficher(data.sender, texteClair, false);
-            }
-        } catch (e) {
-            console.error("Erreur de déchiffrement (Clé incorrecte ?)");
+            } catch (e) { }
         }
     });
 
-    // --- 5. CHARGEMENT DE L'HISTORIQUE ---
-    // Reçu automatiquement après avoir rejoint le salon
     socket.on('load-history', (history) => {
-        msgDiv.innerHTML = ""; // On vide avant de charger
+        msgDiv.innerHTML = ""; 
         history.forEach(d => {
             try {
                 const bytes = CryptoJS.AES.decrypt(d.contenu_chiffre, CLE_SECRET);
                 const texteClair = bytes.toString(CryptoJS.enc.Utf8);
-                // On vérifie si l'expéditeur était "Moi" (pourrait être amélioré avec des pseudos réels)
-                afficher(d.expediteur, texteClair, false);
+                // ICI : La comparaison qui gère l'alignement
+                const estMoi = (d.expediteur === monPseudo);
+                afficher(estMoi ? "Moi" : d.expediteur, texteClair, estMoi);
             } catch (e) { }
         });
     });
 
-    // --- 6. INDICATEUR DE FRAPPE (Typing) ---
-    input.oninput = () => socket.emit('typing', { room: room, sender: "Quelqu'un" });
-    
+    msgInput.oninput = () => socket.emit('typing', { room: room, sender: monPseudo });
     socket.on('is-typing', (data) => {
-        typingStatus.innerText = data.sender + " est en train d'écrire...";
-        // Effacer le message après 3 secondes d'inactivité
-        setTimeout(() => { typingStatus.innerText = ""; }, 3000);
-    });
-
-    // Envoi via la touche "Entrée"
-    input.addEventListener("keypress", (event) => {
-        if (event.key === "Enter") {
-            sendBtn.click();
+        if(data.sender !== monPseudo) {
+            document.getElementById('typing').innerText = data.sender + " écrit...";
+            setTimeout(() => { document.getElementById('typing').innerText = ""; }, 3000);
         }
     });
+
+    msgInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendBtn.click(); });
 </script>
 </body>
 </html>
