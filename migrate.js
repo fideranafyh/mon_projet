@@ -13,12 +13,8 @@ db.connect((err) => {
     if (err) throw err;
     console.log("✅ Connecté pour la migration");
 
-    // Fafana aloha ilay taloha mba hadio tsara
-    const drop = "DROP TABLE IF EXISTS messages";
-    
-    // Mamorona table vaovao mampiasa room_id
-    const create = `
-    CREATE TABLE messages (
+    const sql = `
+    CREATE TABLE IF NOT EXISTS messages (
         id INT AUTO_INCREMENT PRIMARY KEY,
         room_id VARCHAR(255) NOT NULL,
         expediteur VARCHAR(255) NOT NULL,
@@ -26,11 +22,9 @@ db.connect((err) => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
 
-    db.query(drop, () => {
-        db.query(create, (err) => {
-            if (err) console.log("Erreur:", err.message);
-            else console.log("🚀 Table 'messages' créée avec succès !");
-            db.end();
-        });
+    db.query(sql, (err) => {
+        if (err) console.log(err);
+        else console.log("🚀 Table 'messages' prête !");
+        db.end();
     });
 });
