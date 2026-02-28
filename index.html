@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Privé Sécurisé</title>
+    <title>Discussion Privé </title>
     <style>
         :root { 
-            --primary: #1a2a6c; /* Bleu Marine */
+            --primary: #1a2a6c;
             --bg: #f0f2f5; 
             --white: #ffffff;
             --sent: #1a2a6c;
@@ -122,17 +122,17 @@
 <body>
 
 <div id="login-container">
-    <h2 style="margin-top:0;">Espace Privé</h2>
-    <input type="text" id="pseudo-input" placeholder="Votre nom d'utilisateur">
+    <!-- <h2 style="margin-top:0;">Espace Privé</h2> -->
+    <input type="text" id="pseudo-input" placeholder="Nom d'utilisateur">
     <input type="password" id="key-input" placeholder="Code secret d'accès">
-    <button id="login-btn">Rejoindre le chat</button>
+    <button id="login-btn">Rejoindre la discussion</button>
 </div>
 
 <div id="chat-container">
     <div class="header">
         <div>
-            <b id="display-room">Salon Sécurisé</b><br>
-            <small id="display-name" style="opacity: 0.8;"></small>
+            <!-- <b id="display-room">Salon Sécurisé</b><br> -->
+            <!-- <small id="display-name" style="opacity: 0.8;"></small> -->
         </div>
         <div style="display:flex; gap:10px;">
             <button class="btn-del" id="clear-btn">Effacer Historique</button>
@@ -154,7 +154,7 @@
 
 <script>
     const socket = io("https://mon-projet-2yac.onrender.com");
-    const CODE_SECRET = "L3_PRO_2026"; // À modifier selon votre choix
+    const CODE_SECRET = "0123456789"; 
 
     const loginDiv = document.getElementById('login-container');
     const chatDiv = document.getElementById('chat-container');
