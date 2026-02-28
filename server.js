@@ -13,18 +13,15 @@ app.use(cors()); // Activation du middleware CORS pour la sécurité
 
 const server = http.createServer(app);
 
-// Configuration de Socket.io pour accepter toutes les origines (indispensable pour le déploiement)
+// Configuration de Socket.io pour accepter toutes les origines
 const io = new Server(server, { 
     cors: { origin: "*" } 
 });
 
 // --- 2. CONFIGURATION DU PORT ---
-// On utilise le port dynamique fourni par Render (process.env.PORT)
-// Si on teste en local, on utilise le port 3000 par défaut.
 const PORT = process.env.PORT || 3000;
 
 // --- 3. CONNEXION À LA BASE DE DONNÉES (AIVEN CLOUD) ---
-// Remplacez les valeurs ci-dessous par vos informations Aiven si elles sont différentes
 const db = mysql.createConnection({
     host: 'mysql-c9ed28a-fiderana498-4ed0.j.aivencloud.com',
     port: 19806,
@@ -36,7 +33,7 @@ const db = mysql.createConnection({
     }
 });
 
-// Tentative de connexion à MySQL sur le Cloud
+// Tentative de connexion à MySQL
 db.connect((err) => {
     if (err) {
         console.error("❌ ERREUR DE CONNEXION MYSQL : " + err.message);
@@ -49,16 +46,15 @@ db.connect((err) => {
 io.on('connection', (socket) => {
     console.log('Un nouvel utilisateur vient de se connecter');
 
-    // Événement : L'utilisateur rejoint un salon spécifique (via le lien ?room=...)
+    // Événement : L'utilisateur rejoint un salon spécifique
     socket.on('join-room', (roomId) => {
         socket.join(roomId);
         console.log(`Utilisateur a rejoint le salon : ${roomId}`);
 
-        // On récupère l'historique des messages pour ce salon précis depuis MySQL
-        const sql = "SELECT * FROM messages WHERE room_id = ? ORDER BY date_envoi ASC";
+        // Récupération de l'historique depuis MySQL
+        const sql = "SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC";
         db.query(sql, [roomId], (err, results) => {
             if (!err) {
-                // On envoie l'historique uniquement à l'utilisateur qui vient de se connecter
                 socket.emit('load-history', results);
             } else {
                 console.error("Erreur lors du chargement de l'historique :", err);
@@ -68,15 +64,28 @@ io.on('connection', (socket) => {
 
     // Événement : L'utilisateur envoie un message
     socket.on('chat-message', (data) => {
-        // 1. Sauvegarde du message (chiffré côté client) dans la base de données Cloud
+        // Sauvegarde dans la base de données
         const sqlInsert = "INSERT INTO messages (room_id, expediteur, contenu_chiffre) VALUES (?, ?, ?)";
         db.query(sqlInsert, [data.room, data.sender, data.msg], (err) => {
             if (err) {
                 console.error("Erreur d'insertion SQL : ", err);
             }
-            
-            // 2. Diffusion du message en temps réel aux autres personnes du même salon
+            // Diffusion aux autres membres du salon
             socket.to(data.room).emit('receive-message', data);
+        });
+    });
+
+    // --- NOUVEAUTÉ : Événement pour EFFACER TOUT l'historique d'un salon ---
+    socket.on('clear-history', (roomId) => {
+        const sqlDelete = "DELETE FROM messages WHERE room_id = ?";
+        db.query(sqlDelete, [roomId], (err, result) => {
+            if (err) {
+                console.error("Erreur lors de la suppression SQL :", err);
+            } else {
+                console.log(`Historique du salon ${roomId} effacé par un utilisateur.`);
+                // Informer TOUS les utilisateurs du salon que l'historique est vide
+                io.to(roomId).emit('history-cleared');
+            }
         });
     });
 
@@ -94,5 +103,4 @@ io.on('connection', (socket) => {
 // --- 5. LANCEMENT DU SERVEUR ---
 server.listen(PORT, () => {
     console.log(`🚀 SERVEUR DÉMARRÉ SUR LE PORT : ${PORT}`);
-    console.log(`Lien local pour test : http://localhost:${PORT}`);
 });
