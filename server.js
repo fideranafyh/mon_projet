@@ -18,23 +18,29 @@ const db = mysql.createConnection({
     ssl: { rejectUnauthorized: false }
 });
 
+db.connect((err) => {
+    if (err) console.log("Erreur SQL:", err.message);
+    else console.log("✅ Connecté à MySQL");
+});
+
 io.on('connection', (socket) => {
     socket.on('join-room', (roomName) => {
         socket.join(roomName);
-        // Maka ny tantara avy amin'ny room_id
-        const sql = "SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC";
+        // SQL mampiasa 'room'
+        const sql = "SELECT * FROM messages WHERE room = ? ORDER BY id ASC";
         db.query(sql, [roomName], (err, results) => {
             if (!err) socket.emit('load-history', results);
         });
     });
 
     socket.on('chat-message', (data) => {
-        // Tehirizina ao amin'ny MySQL
-        const sql = "INSERT INTO messages (room_id, expediteur, contenu_chiffre) VALUES (?, ?, ?)";
+        // SQL mampiasa 'room'
+        const sql = "INSERT INTO messages (room, expediteur, contenu_chiffre) VALUES (?, ?, ?)";
         db.query(sql, [data.room, data.sender, data.msg], (err) => {
-            if (!err) socket.to(data.room).emit('receive-message', data);
+            if (err) console.log("Erreur Insert:", err);
+            socket.to(data.room).emit('receive-message', data);
         });
     });
 });
 
-server.listen(process.env.PORT || 3000, () => console.log("🚀 Serveur Chat OK"));
+server.listen(process.env.PORT || 3000, () => console.log("🚀 Serveur Live"));

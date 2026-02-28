@@ -11,19 +11,22 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) throw err;
-    // Fafana ny taloha mba hananana table madio sy mifanaraka tsara
+    console.log("✅ Connecté pour la migration");
+
+    // Fafana ny taloha mba hadio
     db.query("DROP TABLE IF EXISTS messages", () => {
+        // Foronina ny vaovao mampiasa 'room'
         const sql = `
         CREATE TABLE messages (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            room_id VARCHAR(255) NOT NULL,
+            room VARCHAR(255) NOT NULL,
             expediteur VARCHAR(255) NOT NULL,
             contenu_chiffre TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`;
         db.query(sql, (err) => {
-            if (err) console.log(err);
-            else console.log("✅ Database MADIO sy VONONA (Table 'messages' créée) !");
+            if (err) console.log("Erreur:", err.message);
+            else console.log("🚀 Table 'messages' MODERNE efa vonona!");
             db.end();
         });
     });
