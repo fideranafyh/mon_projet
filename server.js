@@ -21,6 +21,7 @@ const db = mysql.createConnection({
 io.on('connection', (socket) => {
     socket.on('join-room', (roomName) => {
         socket.join(roomName);
+        // Maka ny tantara avy amin'ny room_id
         const sql = "SELECT * FROM messages WHERE room_id = ? ORDER BY id ASC";
         db.query(sql, [roomName], (err, results) => {
             if (!err) socket.emit('load-history', results);
@@ -28,6 +29,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('chat-message', (data) => {
+        // Tehirizina ao amin'ny MySQL
         const sql = "INSERT INTO messages (room_id, expediteur, contenu_chiffre) VALUES (?, ?, ?)";
         db.query(sql, [data.room, data.sender, data.msg], (err) => {
             if (!err) socket.to(data.room).emit('receive-message', data);
@@ -35,4 +37,4 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(process.env.PORT || 3000, () => console.log("Serveur OK"));
+server.listen(process.env.PORT || 3000, () => console.log("🚀 Serveur Chat OK"));

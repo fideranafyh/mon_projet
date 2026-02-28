@@ -11,20 +11,20 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) throw err;
-    console.log("✅ Connecté pour la migration");
-
-    const sql = `
-    CREATE TABLE IF NOT EXISTS messages (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        room_id VARCHAR(255) NOT NULL,
-        expediteur VARCHAR(255) NOT NULL,
-        contenu_chiffre TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )`;
-
-    db.query(sql, (err) => {
-        if (err) console.log(err);
-        else console.log("🚀 Table 'messages' prête !");
-        db.end();
+    // Fafana ny taloha mba hananana table madio sy mifanaraka tsara
+    db.query("DROP TABLE IF EXISTS messages", () => {
+        const sql = `
+        CREATE TABLE messages (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            room_id VARCHAR(255) NOT NULL,
+            expediteur VARCHAR(255) NOT NULL,
+            contenu_chiffre TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )`;
+        db.query(sql, (err) => {
+            if (err) console.log(err);
+            else console.log("✅ Database MADIO sy VONONA (Table 'messages' créée) !");
+            db.end();
+        });
     });
 });
