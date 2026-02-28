@@ -3,12 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WhatsApp L3 - Login & Chat</title>
+    <title>Espace de Discussion Sécurisé</title>
     <style>
-        /* STYLE GÉNÉRAL */
+        /* CONFIGURATION GÉNÉRALE */
+        :root {
+            --primary-color: #1a2a6c; /* Bleu Marine */
+            --accent-color: #00d2ff;
+            --bg-light: #f4f7f6;
+            --sent-msg: #e3effd;
+            --received-msg: #ffffff;
+        }
+
         body { 
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
-            background-color: #e5ddd5; 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); /* Background dynamique */
             margin: 0;
             display: flex;
             justify-content: center;
@@ -16,112 +24,154 @@
             height: 100vh;
         }
 
-        /* PAGE DE LOGIN */
+        /* STYLE DU LOGIN */
         #login-container {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             text-align: center;
-            width: 300px;
+            width: 320px;
+            animation: fadeIn 0.5s ease-out;
         }
 
-        #login-container h2 { color: #075e54; margin-bottom: 20px; }
+        #login-container h2 { color: var(--primary-color); margin-bottom: 10px; }
+        #login-container p { font-size: 0.9em; color: #666; margin-bottom: 25px; }
         
         #login-container input {
-            width: 90%;
+            width: 100%;
             padding: 12px;
             margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border: 2px solid #eee;
+            border-radius: 10px;
             outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
         }
 
+        #login-container input:focus { border-color: var(--primary-color); }
+
         #login-container button {
-            background: #25d366;
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
+            padding: 12px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
             width: 100%;
+            transition: 0.3s;
         }
 
-        /* INTERFACE CHAT (miafina amin'ny voalohany) */
+        #login-container button:hover { background: #0f1a4a; }
+
+        /* INTERFACE DE CHAT */
         #chat-container { 
-            display: none; /* Cache le chat au début */
+            display: none; 
             width: 100%; 
-            max-width: 500px; 
-            height: 90vh;
-            background: #efe7de; 
+            max-width: 600px; 
+            height: 85vh;
+            background: var(--bg-light); 
             flex-direction: column; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
         }
 
         .chat-header {
-            padding: 10px 16px;
-            background: #075e54; 
+            padding: 20px;
+            background: var(--primary-color);
             color: white;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            text-transform: uppercase;
         }
 
         #messages { 
             flex: 1; 
             overflow-y: auto; 
-            padding: 15px; 
+            padding: 20px; 
             display: flex; 
-            flex-direction: column; 
+            flex-direction: column;
+            gap: 10px;
         }
 
-        /* Bulles de messages */
+        /* Bulles de messages humanisées */
         .msg { 
-            margin-bottom: 8px; 
-            padding: 8px 12px; 
-            border-radius: 8px; 
-            max-width: 80%; 
-            font-size: 14.5px; 
+            padding: 12px 16px; 
+            border-radius: 15px; 
+            max-width: 75%; 
+            font-size: 0.95em; 
+            line-height: 1.5;
             position: relative;
-            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
-            word-wrap: break-word;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        .sent { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 0; }
-        .received { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 0; }
+        .sent { 
+            background-color: var(--primary-color); 
+            color: white;
+            align-self: flex-end; 
+            border-bottom-right-radius: 2px;
+        }
 
-        .sender-name { font-size: 11px; font-weight: bold; color: #128c7e; display: block; margin-bottom: 2px; }
-        .sent .sender-name { display: none; }
+        .received { 
+            background-color: var(--received-msg); 
+            color: #333; 
+            align-self: flex-start; 
+            border-bottom-left-radius: 2px;
+        }
 
-        #input-area { padding: 10px; background: #f0f0f0; display: flex; gap: 10px; }
-        #input-area input { flex: 1; padding: 12px; border: none; border-radius: 25px; outline: none; }
-        #send-btn { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; }
+        .sender-info { font-size: 0.75em; color: #888; margin-bottom: 4px; display: block; }
+        .sent .sender-info { text-align: right; color: rgba(255,255,255,0.7); }
+
+        /* Zone d'écriture */
+        #input-area { padding: 20px; background: white; display: flex; gap: 10px; align-items: center; }
+        #input-area input { flex: 1; padding: 12px 18px; border: 1px solid #ddd; border-radius: 30px; outline: none; background: #f9f9f9; }
+        #send-btn { background: var(--primary-color); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+
+        #typing { font-size: 0.8em; color: #888; padding: 0 25px 10px; font-style: italic; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div id="login-container">
-    <h2>WhatsApp Login</h2>
-    <input type="text" id="pseudo-input" placeholder="Entrez votre pseudo..." autocomplete="off">
-    <button id="login-btn">Rejoindre le chat</button>
+    <h2>Bienvenue</h2>
+    <p>Identifiez-vous pour accéder au salon</p>
+    <input type="text" id="pseudo-input" placeholder="Votre nom ou pseudo..." autocomplete="off">
+    <button id="login-btn">Se connecter</button>
 </div>
 
 <div id="chat-container">
     <div class="chat-header">
+        <div class="user-avatar" id="header-avatar">?</div>
         <div>
-            <h4 id="display-room">Salon</h4>
-            <span id="display-pseudo" style="font-size: 12px; opacity: 0.8;"></span>
+            <h4 style="margin:0; font-size: 16px;" id="room-name">Salon de discussion</h4>
+            <span style="font-size: 12px; opacity: 0.8;" id="my-name">En ligne</span>
         </div>
-        <button id="logout-btn" style="background:none; border:none; color:white; cursor:pointer; font-size:12px; text-decoration:underline;">Changer de pseudo</button>
     </div>
     
     <div id="messages"></div>
-    <div id="typing" style="font-size: 12px; color: grey; padding: 5px 20px;"></div>
+    <div id="typing"></div>
     
     <div id="input-area">
-        <input type="text" id="msg-input" placeholder="Message" autocomplete="off">
-        <button id="send-btn">➤</button>
+        <input type="text" id="msg-input" placeholder="Écrire un message..." autocomplete="off">
+        <button id="send-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+        </button>
     </div>
 </div>
 
@@ -132,35 +182,29 @@
     const socket = io("https://mon-projet-2yac.onrender.com");
     const CLE_SECRET = "MA_CLE_L3_2026"; 
     
-    // Éléments HTML
     const loginDiv = document.getElementById('login-container');
     const chatDiv = document.getElementById('chat-container');
     const pseudoInput = document.getElementById('pseudo-input');
     const loginBtn = document.getElementById('login-btn');
-    const logoutBtn = document.getElementById('logout-btn');
     const msgInput = document.getElementById('msg-input');
     const sendBtn = document.getElementById('send-btn');
     const msgDiv = document.getElementById('messages');
 
     let monPseudo = localStorage.getItem('chat_pseudo');
     const params = new URLSearchParams(window.location.search);
-    const room = params.get('room') || 'salon_general';
+    const room = params.get('room') || 'Général';
 
-    // --- LOGIQUE D'AFFICHAGE ---
     function demarrerChat() {
         loginDiv.style.display = 'none';
         chatDiv.style.display = 'flex';
-        document.getElementById('display-room').innerText = "Salon: " + room;
-        document.getElementById('display-pseudo').innerText = "Moi: " + monPseudo;
+        document.getElementById('room-name').innerText = "Salon : " + room;
+        document.getElementById('my-name').innerText = "Connecté en tant que : " + monPseudo;
+        document.getElementById('header-avatar').innerText = monPseudo.charAt(0);
         socket.emit('join-room', room);
     }
 
-    // Vérifie si le pseudo existe déjà
-    if (monPseudo) {
-        demarrerChat();
-    }
+    if (monPseudo) demarrerChat();
 
-    // Bouton Login
     loginBtn.onclick = () => {
         const val = pseudoInput.value.trim();
         if (val) {
@@ -170,18 +214,14 @@
         }
     };
 
-    // Bouton Logout
-    logoutBtn.onclick = () => {
-        localStorage.removeItem('chat_pseudo');
-        location.reload();
-    };
-
-    // --- FONCTIONS CHAT ---
     function afficher(sender, texte, estMoi) {
         const div = document.createElement('div');
         div.className = estMoi ? 'msg sent' : 'msg received';
-        const nameSpan = estMoi ? '' : `<span class="sender-name">${sender}</span>`;
-        div.innerHTML = `${nameSpan}${texte}`;
+        
+        // Humanisation : ajout du nom au-dessus de chaque bulle (sauf pour soi)
+        const senderLabel = `<span class="sender-info">${estMoi ? 'Moi' : sender}</span>`;
+        
+        div.innerHTML = `${senderLabel} ${texte}`;
         msgDiv.appendChild(div);
         msgDiv.scrollTop = msgDiv.scrollHeight;
     }
@@ -191,7 +231,7 @@
         if(text) {
             const encrypted = CryptoJS.AES.encrypt(text, CLE_SECRET).toString();
             socket.emit('chat-message', { room: room, msg: encrypted, sender: monPseudo });
-            afficher("Moi", text, true);
+            afficher(monPseudo, text, true);
             msgInput.value = "";
         }
     };
@@ -212,9 +252,8 @@
             try {
                 const bytes = CryptoJS.AES.decrypt(d.contenu_chiffre, CLE_SECRET);
                 const texteClair = bytes.toString(CryptoJS.enc.Utf8);
-                // ICI : La comparaison qui gère l'alignement
                 const estMoi = (d.expediteur === monPseudo);
-                afficher(estMoi ? "Moi" : d.expediteur, texteClair, estMoi);
+                afficher(d.expediteur, texteClair, estMoi);
             } catch (e) { }
         });
     });
@@ -222,7 +261,7 @@
     msgInput.oninput = () => socket.emit('typing', { room: room, sender: monPseudo });
     socket.on('is-typing', (data) => {
         if(data.sender !== monPseudo) {
-            document.getElementById('typing').innerText = data.sender + " écrit...";
+            document.getElementById('typing').innerText = data.sender + " est en train d'écrire...";
             setTimeout(() => { document.getElementById('typing').innerText = ""; }, 3000);
         }
     });
